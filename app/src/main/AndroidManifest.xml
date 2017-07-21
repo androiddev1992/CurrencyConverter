@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.currencyconverter">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,5 +19,18 @@
             </intent-filter>
         </activity>
     </application>
+
+    <provider
+        android:name="com.currencyconverter.data.provider.ConversionProvider"
+        android:authorities="com.currencyconverter"
+        android:exported="true" />
+
+    <service android:name="com.currencyconverter.data.service.ScheduledTaskService"
+        android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
+        </intent-filter>
+    </service>
 
 </manifest>
