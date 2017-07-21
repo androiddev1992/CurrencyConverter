@@ -4,8 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.currencyconverter.data.DBHelper;
 import com.currencyconverter.data.service.FetchCurrencyRatesService;
@@ -20,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     TextInputEditText etConversionValue;
 
     @BindView(R.id.spinnerBaseCurrency)
-    EditText spinnerBaseCurrency;
+    Spinner spinnerBaseCurrency;
 
     @BindView(R.id.recyclerview)
     RecyclerView recyclerview;
@@ -39,7 +40,20 @@ public class MainActivity extends AppCompatActivity {
             /** Used the GcmTaskService instead of JobScheduler cause
              *  JobScheduler is not supported by pre-lollipop versions **/
 
-            ScheduledTaskService.schedule(this);
+            ScheduledTaskService.scheduleRepeat(this);
         }
+
+        initViews();
+    }
+
+    private void initViews() {
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
+        recyclerview.setLayoutManager(gridLayoutManager);
+
+        recyclerview.setHasFixedSize(false);
+
+        CurrencyRateAdapter adapter = new CurrencyRateAdapter(this, DBHelper.getCurrencyRatesList(FetchCurrencyRatesService.BASE_CURRENCY));
+        recyclerview.setAdapter(adapter);
     }
 }

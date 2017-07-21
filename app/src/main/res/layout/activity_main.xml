@@ -34,6 +34,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="right"
                         android:hint="@string/conversion_hint"
+                        android:textColor="@color/white"
                         android:inputType="numberDecimal"
                         android:lines="1" />
                 </android.support.design.widget.TextInputLayout>

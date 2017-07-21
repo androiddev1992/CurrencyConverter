@@ -4,7 +4,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <meta-data
+        android:name="com.google.android.gms.version"
+        android:value="@integer/google_play_services_version" />
+
     <application
+        android:name=".CurrencyConverterApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -18,19 +23,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="com.currencyconverter.data.provider.ConversionProvider"
+            android:authorities="com.currencyconverter.data.provider.ConversionProvider"
+            android:exported="true"
+            android:label="ConversionProvider" />
+
+        <service
+            android:name=".data.service.ScheduledTaskService"
+            android:exported="true"
+            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
+            <intent-filter>
+                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
+            </intent-filter>
+        </service>
+
+        <service android:name="com.currencyconverter.data.service.FetchCurrencyRatesService" />
+
     </application>
-
-    <provider
-        android:name="com.currencyconverter.data.provider.ConversionProvider"
-        android:authorities="com.currencyconverter"
-        android:exported="true" />
-
-    <service android:name="com.currencyconverter.data.service.ScheduledTaskService"
-        android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
-        </intent-filter>
-    </service>
-
 </manifest>

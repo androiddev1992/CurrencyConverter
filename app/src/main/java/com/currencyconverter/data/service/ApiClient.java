@@ -25,7 +25,6 @@ class ApiClient {
     private final String BASE_URL = "http://api.fixer.io/";
 
     private OkHttpClient okHttpClient;
-    private String mBaseURL;
 
     private ApiClient() {
 
@@ -46,7 +45,7 @@ class ApiClient {
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(mBaseURL)
+                .baseUrl(BASE_URL)
                 .build();
 
         return retrofit.create(service);

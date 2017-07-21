@@ -21,7 +21,7 @@ public class FetchCurrencyRatesService extends IntentService {
 
     private static final String TAG = FetchCurrencyRatesService.class.getSimpleName();
 
-    private final String BASE_CURRENCY = "USD";
+    public static final String BASE_CURRENCY = "USD";
 
     public FetchCurrencyRatesService() {
         super(TAG);
@@ -38,7 +38,7 @@ public class FetchCurrencyRatesService extends IntentService {
         try {
             GetApiInterface getApiInterface = ApiClient.getInstance().getService(GetApiInterface.class);
 
-            Call<ExchangeRates> call = getApiInterface.fetchTrendingFeeds("USD");
+            Call<ExchangeRates> call = getApiInterface.fetchTrendingFeeds(BASE_CURRENCY);
 
             ExchangeRates response = call.execute().body();
 
