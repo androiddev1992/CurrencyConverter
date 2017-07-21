@@ -13,7 +13,7 @@ public class ExchangeRates implements Serializable{
 
     private String date;
 
-    private HashMap<String, Long> rates;
+    private HashMap<String, Float> rates;
 
     /**
      *  Getters
@@ -26,7 +26,7 @@ public class ExchangeRates implements Serializable{
         return date;
     }
 
-    public HashMap<String, Long> getRates() {
+    public HashMap<String, Float> getRates() {
         return rates;
     }
 
@@ -41,7 +41,7 @@ public class ExchangeRates implements Serializable{
         this.date = date;
     }
 
-    public void setRates(HashMap<String, Long> rates) {
+    public void setRates(HashMap<String, Float> rates) {
         this.rates = rates;
     }
 }

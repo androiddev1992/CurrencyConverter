@@ -1,12 +1,11 @@
 package com.currencyconverter.data.service;
 
 import android.app.IntentService;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.currencyconverter.data.DatabaseContract;
+import com.currencyconverter.data.DBHelper;
 import com.currencyconverter.model.ExchangeRates;
 
 import java.io.IOException;
@@ -21,6 +20,8 @@ import retrofit2.Call;
 public class FetchCurrencyRatesService extends IntentService {
 
     private static final String TAG = FetchCurrencyRatesService.class.getSimpleName();
+
+    private final String BASE_CURRENCY = "USD";
 
     public FetchCurrencyRatesService() {
         super(TAG);
@@ -44,14 +45,15 @@ public class FetchCurrencyRatesService extends IntentService {
             if (response == null || response.getRates() == null || response.getRates().size() == 0)
                 return;
 
-            for (Map.Entry<String, Long> entry : response.getRates().entrySet()) {
+            DBHelper.deleteAllFromTableConversionRates();
 
-                ContentValues contentValues = new ContentValues();
+            DBHelper.addConversionRatesToTable(BASE_CURRENCY, 1.0f);
 
-                contentValues.put(DatabaseContract.TableConversionRates.COL_CURRENCY_KEY, entry.getKey());
-                contentValues.put(DatabaseContract.TableConversionRates.COL_CONVERSION_VALUE, entry.getValue());
+            for (Map.Entry<String, Float> entry : response.getRates().entrySet()) {
 
-                getContentResolver().insert(DatabaseContract.CONTENT_URI, contentValues);
+                Log.d(TAG, "Varun " + entry.getKey() + "   " + entry.getValue());
+
+                DBHelper.addConversionRatesToTable(entry.getKey(), entry.getValue());
             }
 
         } catch (IOException e) {

@@ -1,43 +1,58 @@
 package com.currencyconverter.data;
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.util.Log;
 
 /**
  * Created by Varun on 21/07/17.
  */
 
-public class DBHelper extends SQLiteOpenHelper {
+public class DBHelper {
+
     private static final String TAG = DBHelper.class.getSimpleName();
 
-    public static final String DB_NAME = "currency_conversion.db";
-    public static final int DB_VERSION = 1;
+    public static void addConversionRatesToTable(String currencyKey, Float currencyRate) {
 
-    private static final String SQL_CREATE_TABLE_CONVERSION_RATES = "CREATE TABLE " +
-            DatabaseContract.TABLE_CONVERSION_RATES + " (" +
-            DatabaseContract.TableConversionRates._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            DatabaseContract.TableConversionRates.COL_CURRENCY_KEY + " TEXT NOT NULL," +
-            DatabaseContract.TableConversionRates.COL_CONVERSION_VALUE + " TEXT NOT NULL )";
+        ContentValues contentValues = new ContentValues();
 
-    private Resources mResources;
+        contentValues.put(TableConversionRates.COL_CURRENCY_KEY, currencyKey);
+        contentValues.put(TableConversionRates.COL_CONVERSION_VALUE, currencyRate);
 
-    public DBHelper(Context context) {
-        super(context, DB_NAME, null, DB_VERSION);
-
-        mResources = context.getResources();
+        CPWrapper.insert(TableConversionRates.TABLE_NAME, contentValues);
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase db){
-        db.execSQL(SQL_CREATE_TABLE_CONVERSION_RATES);
+    public static int getConversionRatesCount() {
+
+        int count = 0;
+        Cursor cursor = null;
+
+        try {
+            cursor = CPWrapper.query(TableConversionRates.TABLE_NAME, null, null, null, null);
+
+            if (cursor != null)
+                count = cursor.getCount();
+
+        } catch (Exception e) {
+
+            Log.e(TAG, e.getMessage());
+        } finally {
+
+            close(cursor);
+        }
+
+        return count;
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + DatabaseContract.TABLE_CONVERSION_RATES);
-        onCreate(db);
+    public static void deleteAllFromTableConversionRates() {
+
+        CPWrapper.EmptyTable(TableConversionRates.TABLE_NAME);
+    }
+
+    public static void close(Cursor cursor) {
+
+        if (cursor != null && !cursor.isClosed())
+            cursor.close();
     }
 
 }
