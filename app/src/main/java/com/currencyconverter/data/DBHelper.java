@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.currencyconverter.data.service.FetchCurrencyRatesService;
 import com.currencyconverter.model.CurrencyExchangeData;
 
 import java.util.ArrayList;
@@ -27,7 +28,10 @@ public class DBHelper {
         CPWrapper.insert(TableConversionRates.TABLE_NAME, contentValues);
     }
 
-    public static List<CurrencyExchangeData> getCurrencyRatesList(String baseCurrency) {
+    public static List<CurrencyExchangeData> getCurrencyRatesList(Float valueToConvert, String baseCurrency) {
+
+        String exchangeValue = getExchangeValue(baseCurrency);
+        Float baseCurrencyExchangeVal = Float.parseFloat(exchangeValue);
 
         List<CurrencyExchangeData> exchangeRatesList = new ArrayList<>();
         Cursor cursor = null;
@@ -47,7 +51,14 @@ public class DBHelper {
                     Float exchangeRate = cursor.getFloat(cursor.getColumnIndex(TableConversionRates.COL_CONVERSION_VALUE));
 
                     exchangeRates.setCurrencyName(currencyName);
-                    exchangeRates.setCurrencyExchangeRate(exchangeRate);
+
+                    if (baseCurrency.equalsIgnoreCase(FetchCurrencyRatesService.BASE_CURRENCY)) {
+                        exchangeRates.setCurrencyExchangeRate(exchangeRate * valueToConvert);
+                    } else {
+
+                        Float val = (exchangeRate/baseCurrencyExchangeVal) * valueToConvert;
+                        exchangeRates.setCurrencyExchangeRate(val);
+                    }
 
                     exchangeRatesList.add(exchangeRates);
                 }
@@ -85,6 +96,67 @@ public class DBHelper {
         }
 
         return count;
+    }
+
+    public static List<String> getCurrencyNamesList() {
+
+        List<String> currencyNameList = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+
+            cursor = CPWrapper.query(TableConversionRates.TABLE_NAME, null, null,
+                    null,
+                    TableConversionRates.COL_CURRENCY_KEY + " ASC");
+
+            if (cursor != null && cursor.getCount() > 0) {
+
+                while (cursor.moveToNext()) {
+
+                    String currencyName = cursor.getString(cursor.getColumnIndex(TableConversionRates.COL_CURRENCY_KEY));
+
+                    currencyNameList.add(currencyName);
+                }
+            }
+
+        } catch (Exception e) {
+
+            Log.e(TAG, e.getMessage());
+        } finally {
+
+            close(cursor);
+        }
+
+        // return list
+        return currencyNameList;
+    }
+
+    public static String getExchangeValue(String currency) {
+
+        String exchangeValue = "";
+        Cursor cursor = null;
+
+        try {
+
+            cursor = CPWrapper.query(TableConversionRates.TABLE_NAME, null, TableConversionRates.COL_CURRENCY_KEY + " = ?",
+                    new String[]{currency}, TableConversionRates.COL_CURRENCY_KEY + " ASC");
+
+            if (cursor != null && cursor.getCount() > 0) {
+
+                cursor.moveToFirst();
+
+                if (cursor.getColumnIndex(TableConversionRates.COL_CURRENCY_KEY) != -1)
+                    exchangeValue = cursor.getString(cursor.getColumnIndex(TableConversionRates.COL_CONVERSION_VALUE));
+            }
+
+        } catch (Exception e) {
+
+            Log.e(TAG, e.getMessage());
+        } finally {
+
+            close(cursor);
+        }
+
+        return exchangeValue;
     }
 
     public static void deleteAllFromTableConversionRates() {

@@ -1,6 +1,8 @@
 package com.currencyconverter;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,7 +60,7 @@ public class CurrencyRateAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         CurrencyRateHolder holder = (CurrencyRateHolder) viewHolder;
 
         holder.tvCurrencyName.setText(exchangeRate.getCurrencyName());
-        holder.tvExchangeValue.setText("" + exchangeRate.getCurrencyExchangeRate());
+        holder.tvExchangeValue.setText(String.format("%.4f", exchangeRate.getCurrencyExchangeRate()));
 
     }
 
@@ -79,4 +81,24 @@ public class CurrencyRateAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
+    public void updateList(List<CurrencyExchangeData> exchangeRatesList) {
+
+        if (exchangeRatesList == null)
+            return;
+
+        if (exchangeRatesList == null)
+            exchangeRatesList = new ArrayList<>();
+
+        this.exchangeRatesList.clear();
+
+        this.exchangeRatesList.addAll(exchangeRatesList);
+
+        // notify whole adapter about new data inserted
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
+    }
 }

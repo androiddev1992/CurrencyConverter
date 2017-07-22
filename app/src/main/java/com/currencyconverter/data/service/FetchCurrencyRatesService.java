@@ -7,6 +7,9 @@ import android.util.Log;
 
 import com.currencyconverter.data.DBHelper;
 import com.currencyconverter.model.ExchangeRates;
+import com.currencyconverter.model.NewCurrencyRatesReceived;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.Map;
@@ -22,6 +25,9 @@ public class FetchCurrencyRatesService extends IntentService {
     private static final String TAG = FetchCurrencyRatesService.class.getSimpleName();
 
     public static final String BASE_CURRENCY = "USD";
+    public static final Float DEFAULT_VALUE = 1.0f;
+
+    private EventBus mEventBus = EventBus.getDefault();
 
     public FetchCurrencyRatesService() {
         super(TAG);
@@ -47,7 +53,7 @@ public class FetchCurrencyRatesService extends IntentService {
 
             DBHelper.deleteAllFromTableConversionRates();
 
-            DBHelper.addConversionRatesToTable(BASE_CURRENCY, 1.0f);
+            DBHelper.addConversionRatesToTable(BASE_CURRENCY, DEFAULT_VALUE);
 
             for (Map.Entry<String, Float> entry : response.getRates().entrySet()) {
 
@@ -55,6 +61,9 @@ public class FetchCurrencyRatesService extends IntentService {
 
                 DBHelper.addConversionRatesToTable(entry.getKey(), entry.getValue());
             }
+
+            if (mEventBus != null)
+                mEventBus.post(new NewCurrencyRatesReceived());
 
         } catch (IOException e) {
 

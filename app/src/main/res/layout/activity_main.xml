@@ -4,7 +4,9 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:clickable="true"
+    android:fitsSystemWindows="true"
+    android:focusableInTouchMode="true">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -34,15 +36,18 @@
                         android:layout_height="wrap_content"
                         android:gravity="right"
                         android:hint="@string/conversion_hint"
-                        android:textColor="@color/white"
+                        android:imeOptions="actionDone"
                         android:inputType="numberDecimal"
-                        android:lines="1" />
+                        android:lines="1"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
                 </android.support.design.widget.TextInputLayout>
 
                 <Spinner
                     android:id="@+id/spinnerBaseCurrency"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"></Spinner>
+                    android:layout_height="wrap_content"
+                    android:gravity="right"></Spinner>
 
             </LinearLayout>
 
@@ -54,6 +59,8 @@
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:focusableInTouchMode="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </android.support.design.widget.CoordinatorLayout>
